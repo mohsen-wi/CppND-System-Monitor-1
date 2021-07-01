@@ -19,15 +19,32 @@ int Process::Pid() { return pid_; }
 
 // TODO: Return this process's CPU utilization
 float Process::CpuUtilization() { 
-  long activejiffies = LinuxParser::ActiveJiffies(pid_);
-  long processuptime= LinuxParser::UpTime(pid_);
-  long systemuptime= LinuxParser::UpTime();
-  long seconds= systemuptime - processuptime ;
-  if (seconds != 0){ 
-  return (float)activejiffies/seconds; 
-  }else {
-    return 0.0;
+  string key, line, token;
+  vector<string> values;
+  int utime = 0;
+  int stime = 0;
+  int cutime = 0;
+  int cstime= 0;
+  float starttime = 0.0;
+  std::ifstream filestream(LinuxParser::kProcDirectory + to_string(pid_) + LinuxParser::kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    while(linestream>>token) 
+        {
+          values.push_back(token);
+        }    
   }
+  utime = std::stoi(values[13]);
+  stime = std::stoi(values[14]);
+  cutime = std::stoi(values[15]);
+  cstime = std::stoi(values[16]);
+  starttime = std::stof(values[21]);
+  float totaltime = float(utime + stime + cutime + cstime);
+  float seconds = float (LinuxParser::UpTime() - (starttime/sysconf(_SC_CLK_TCK)));
+  cpuutilization_ = (totaltime/sysconf(_SC_CLK_TCK))/seconds;
+
+  return cpuutilization_;
  }
 
 // TODO: Return the command that generated this process
@@ -46,7 +63,5 @@ long int Process::UpTime() { return LinuxParser::UpTime(pid_); }
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a) const { 
    
- bool flag = a.cpuUtilization_ < this->cpuUtilization_;
-
-    return flag;
+return cpuutilization_ > a.cpuutilization_;
  }

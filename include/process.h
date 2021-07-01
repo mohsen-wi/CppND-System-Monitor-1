@@ -9,7 +9,7 @@ It contains relevant attributes as shown below
 class Process {
  public:
   //cpu_proc_utilization_=Process::CpuUtilization();
-  Process(int pid_);
+  Process(int pid);
   int Pid();                               // TODO: See src/process.cpp
   std::string User();                      // TODO: See src/process.cpp
   std::string Command();                   // TODO: See src/process.cpp
@@ -19,18 +19,17 @@ class Process {
   bool operator<(Process const& a) const;
   void update();
   long ActiveJiffies();
-  
+  void Pid(int id){
+    pid_ = id;
+  }
+  void CpuUtilization(float util){
+    cpuutilization_ = util;
+  } 
 
   // TODO: Declare any necessary private members
  private:
  int pid_;
- std::string user_;
- std::string command_;
- float cpuUtilization_;
- std::string ram_;
- long int uptime_;
- long actjiff_;
-
+ float cpuutilization_;
 };
 
 #endif

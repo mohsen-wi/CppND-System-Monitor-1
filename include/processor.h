@@ -8,10 +8,9 @@ class Processor {
   float Utilization();  // TODO: See src/processor.cpp
 
   // TODO: Declare any necessary private members
- private:
-
-unsigned long long int PrevIdle, PrevActive, Idle, Active, PrevTotal, Total, Totald, Idled;
-float utilization;
+private: 
+  long cachedactivetime{0};
+  long cachedidletime{0};;
 };
 
 #endif
